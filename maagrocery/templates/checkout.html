@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Checkout - MaaGrocery{% endblock %}
+
+{% block content %}
+<section class="page-hero compact-hero">
+    <div>
+        <span class="eyebrow">Checkout</span>
+        <h1>Delivery details</h1>
+    </div>
+</section>
+
+<section class="checkout-layout">
+    <form class="checkout-form" method="post">
+        <div class="form-grid">
+            <label>Customer name
+                <input type="text" name="name" value="{{ customer.name or '' }}" required>
+            </label>
+            <label>Mobile number
+                <input type="tel" name="mobile" value="{{ customer.mobile or '' }}" required>
+            </label>
+            <label>Email
+                <input type="email" name="email" value="{{ customer.email or '' }}">
+            </label>
+            <label>City
+                <input type="text" name="city" value="{{ customer.city or '' }}" required>
+            </label>
+            <label>Pincode
+                <input type="text" name="pincode" value="{{ customer.pincode or '' }}" required>
+            </label>
+            <label class="span-2">Full address
+                <textarea name="address" rows="4" required>{{ customer.address or '' }}</textarea>
+            </label>
+        </div>
+
+        <div class="payment-methods">
+            <h2>Payment method</h2>
+            <label class="payment-option">
+                <input type="radio" name="payment_method" value="paytm" checked>
+                <span><i class="fa-solid fa-shield-halved"></i> Paytm online payment</span>
+            </label>
+            <label class="payment-option">
+                <input type="radio" name="payment_method" value="cod">
+                <span><i class="fa-solid fa-money-bill-wave"></i> Cash on delivery</span>
+            </label>
+        </div>
+
+        <button class="btn btn-primary full-btn" type="submit"><i class="fa-solid fa-lock"></i> Place order</button>
+    </form>
+
+    <aside class="summary-panel">
+        <h2>Order summary</h2>
+        {% for item in summary.items %}
+            <div class="summary-item">
+                <span>{{ item.name }} &times; {{ item.quantity }}</span>
+                <strong>{{ item.line_total | money }}</strong>
+            </div>
+        {% endfor %}
+        <div><span>Subtotal</span><strong>{{ summary.subtotal | money }}</strong></div>
+        <div><span>Delivery</span><strong>{{ summary.delivery_charge | money }}</strong></div>
+        <div class="summary-total"><span>Total</span><strong>{{ summary.total | money }}</strong></div>
+    </aside>
+</section>
+{% endblock %}

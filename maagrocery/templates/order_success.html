@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }} - MaaGrocery{% endblock %}
+
+{% block content %}
+<section class="success-hero">
+    <div class="success-icon">
+        {% if order.payment_status == 'Failed' %}
+            <i class="fa-solid fa-circle-exclamation"></i>
+        {% else %}
+            <i class="fa-solid fa-circle-check"></i>
+        {% endif %}
+    </div>
+    <span class="eyebrow">Order ID {{ order.order_number }}</span>
+    <h1>{% if order.payment_status == 'Failed' %}Payment needs attention{% else %}Order received{% endif %}</h1>
+    <p>{{ order.customer_name }}, your MaaGrocery order is saved with payment status: {{ order.payment_status }}.</p>
+</section>
+
+<section class="order-layout">
+    <div class="order-panel">
+        <h2>Customer details</h2>
+        <p><strong>Name:</strong> {{ order.customer_name }}</p>
+        <p><strong>Mobile:</strong> {{ order.mobile }}</p>
+        <p><strong>Email:</strong> {{ order.email or 'Not provided' }}</p>
+        <p><strong>Address:</strong> {{ order.address }}, {{ order.city }} - {{ order.pincode }}</p>
+        <p><strong>Order status:</strong> {{ order.order_status }}</p>
+        <p><strong>Payment:</strong> {{ order.payment_method|upper }} &middot; {{ order.payment_status }}</p>
+        {% if payment and payment.txn_id %}
+            <p><strong>Paytm TXN ID:</strong> {{ payment.txn_id }}</p>
+        {% endif %}
+    </div>
+    <div class="order-panel">
+        <h2>Order summary</h2>
+        {% for item in items %}
+            <div class="summary-item">
+                <span>{{ item.product_name }} &times; {{ item.quantity }}</span>
+                <strong>{{ item.total | money }}</strong>
+            </div>
+        {% endfor %}
+        <div><span>Subtotal</span><strong>{{ order.subtotal | money }}</strong></div>
+        <div><span>Delivery</span><strong>{{ order.delivery_charge | money }}</strong></div>
+        <div class="summary-total"><span>Total</span><strong>{{ order.total_amount | money }}</strong></div>
+        <a class="btn btn-primary full-btn" href="{{ url_for('products') }}"><i class="fa-solid fa-bag-shopping"></i> Continue shopping</a>
+    </div>
+</section>
+{% endblock %}

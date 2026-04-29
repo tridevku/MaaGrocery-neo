@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Paytm Checkout - MaaGrocery{% endblock %}
+
+{% block head_extra %}
+<script>
+    function onScriptLoad() {
+        const config = {
+            root: "",
+            flow: "DEFAULT",
+            data: {
+                orderId: "{{ order.order_number }}",
+                token: "{{ txn_token }}",
+                tokenType: "TXN_TOKEN",
+                amount: "{{ paytm_amount }}"
+            },
+            handler: {
+                notifyMerchant: function(eventName, data) {
+                    console.log("Paytm event", eventName, data);
+                }
+            }
+        };
+        if (window.Paytm && window.Paytm.CheckoutJS) {
+            window.Paytm.CheckoutJS.onLoad(function () {
+                window.Paytm.CheckoutJS.init(config).then(function () {
+                    window.Paytm.CheckoutJS.invoke();
+                }).catch(function (error) {
+                    console.log("Paytm init error", error);
+                });
+            });
+        }
+    }
+</script>
+<script src="{{ paytm_host }}/merchantpgpui/checkoutjs/merchants/{{ paytm_mid }}.js" onload="onScriptLoad();" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block content %}
+<section class="success-hero">
+    <div class="success-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <span class="eyebrow">Paytm secure checkout</span>
+    <h1>Opening payment</h1>
+    <p>Order {{ order.order_number }} &middot; {{ order.total_amount | money }}</p>
+</section>
+{% endblock %}

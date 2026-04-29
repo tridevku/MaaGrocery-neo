@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Cart - MaaGrocery{% endblock %}
+
+{% block content %}
+<section class="page-hero compact-hero">
+    <div>
+        <span class="eyebrow">Shopping cart</span>
+        <h1>Your basket</h1>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('products') }}"><i class="fa-solid fa-arrow-left"></i> Continue shopping</a>
+</section>
+
+{% if summary.items %}
+<section class="cart-layout">
+    <div class="cart-list">
+        {% for item in summary.items %}
+            <article class="cart-item" data-cart-id="{{ item.cart_id }}" data-unit-price="{{ item.selling_price }}">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}">
+                <div class="cart-info">
+                    <a href="{{ url_for('product_detail', slug=item.slug) }}">{{ item.name }}</a>
+                    <span>{{ item.unit }} &middot; {{ item.selling_price | money }}</span>
+                </div>
+                <div class="quantity-control">
+                    <button type="button" class="qty-btn" data-change="-1" aria-label="Decrease"><i class="fa-solid fa-minus"></i></button>
+                    <input type="number" value="{{ item.quantity }}" min="1" max="{{ item.stock }}" aria-label="Quantity">
+                    <button type="button" class="qty-btn" data-change="1" aria-label="Increase"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <strong class="line-total">{{ item.line_total | money }}</strong>
+                <button type="button" class="icon-btn remove-cart-item" aria-label="Remove">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </article>
+        {% endfor %}
+    </div>
+
+    <aside class="summary-panel">
+        <h2>Bill details</h2>
+        <div><span>Subtotal</span><strong id="cart-subtotal">{{ summary.subtotal | money }}</strong></div>
+        <div><span>Delivery</span><strong id="cart-delivery">{{ summary.delivery_charge | money }}</strong></div>
+        <div class="summary-total"><span>Total</span><strong id="cart-total">{{ summary.total | money }}</strong></div>
+        <a class="btn btn-primary full-btn" href="{{ url_for('checkout') }}"><i class="fa-solid fa-credit-card"></i> Checkout</a>
+    </aside>
+</section>
+{% else %}
+<section class="empty-state page-empty">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <h1>Your cart is empty</h1>
+    <p>Fresh groceries are waiting in the store.</p>
+    <a class="btn btn-primary" href="{{ url_for('products') }}"><i class="fa-solid fa-bag-shopping"></i> Shop products</a>
+</section>
+{% endif %}
+{% endblock %}

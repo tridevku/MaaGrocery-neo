@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - MaaGrocery{% endblock %}
+
+{% block content %}
+<section class="admin-hero">
+    <div>
+        <span class="eyebrow">Admin dashboard</span>
+        <h1>MaaGrocery control room</h1>
+    </div>
+    <div class="admin-actions">
+        <a class="btn btn-primary" href="{{ url_for('add_product') }}"><i class="fa-solid fa-plus"></i> Add product</a>
+        <a class="btn btn-soft" href="{{ url_for('admin_logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-box">
+        <span>Products</span>
+        <strong>{{ stats.products }}</strong>
+    </div>
+    <div class="stat-box">
+        <span>Orders</span>
+        <strong>{{ stats.orders }}</strong>
+    </div>
+    <div class="stat-box">
+        <span>Pending</span>
+        <strong>{{ stats.pending }}</strong>
+    </div>
+    <div class="stat-box">
+        <span>Revenue</span>
+        <strong>{{ stats.revenue | money }}</strong>
+    </div>
+</section>
+
+<section class="admin-section">
+    <div class="section-heading">
+        <span class="eyebrow">Inventory</span>
+        <h2>All products</h2>
+    </div>
+    <div class="table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>
+                            <div class="table-product">
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                <span>{{ product.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ product.category_name }}</td>
+                        <td>
+                            {% if product.discount_price and product.discount_price < product.price %}
+                                {{ product.discount_price | money }}
+                            {% else %}
+                                {{ product.price | money }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form class="stock-form" action="{{ url_for('update_stock', product_id=product.id) }}" method="post">
+                                <input type="number" name="stock" value="{{ product.stock }}" min="0" aria-label="Stock">
+                                <button class="icon-btn" type="submit" aria-label="Save stock"><i class="fa-solid fa-floppy-disk"></i></button>
+                            </form>
+                        </td>
+                        <td class="action-cell">
+                            <a class="icon-btn" href="{{ url_for('edit_product', product_id=product.id) }}" aria-label="Edit"><i class="fa-solid fa-pen"></i></a>
+                            <form action="{{ url_for('delete_product', product_id=product.id) }}" method="post" onsubmit="return confirm('Delete this product?');">
+                                <button class="icon-btn danger" type="submit" aria-label="Delete"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="admin-section">
+    <div class="section-heading">
+        <span class="eyebrow">Orders</span>
+        <h2>Customer orders</h2>
+    </div>
+    <div class="orders-admin">
+        {% for order in orders %}
+            <article class="order-admin-card">
+                <div class="order-admin-head">
+                    <div>
+                        <strong>{{ order.order_number }}</strong>
+                        <span>{{ order.customer_name }} &middot; {{ order.mobile }}</span>
+                    </div>
+                    <strong>{{ order.total_amount | money }}</strong>
+                </div>
+                <div class="order-admin-body">
+                    <p>{{ order.address }}, {{ order.city }} - {{ order.pincode }}</p>
+                    <p>Payment: {{ order.payment_method|upper }} &middot; {{ order.payment_status }}</p>
+                    <div class="order-items-mini">
+                        {% for item in order_items[order.id] %}
+                            <span>{{ item.product_name }} &times; {{ item.quantity }}</span>
+                        {% endfor %}
+                    </div>
+                    <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="post" class="status-form">
+                        <select name="order_status">
+                            {% for status in statuses %}
+                                <option value="{{ status }}" {% if order.order_status == status %}selected{% endif %}>{{ status }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-soft" type="submit"><i class="fa-solid fa-rotate"></i> Update</button>
+                    </form>
+                </div>
+            </article>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-receipt"></i>
+                <h2>No orders yet</h2>
+                <p>New customer orders will appear here.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

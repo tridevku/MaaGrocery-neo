@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ product.name }} - MaaGrocery{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="section-heading">
+        <span class="eyebrow">Inventory</span>
+        <h1>Edit product</h1>
+    </div>
+    <form class="product-form" method="post" enctype="multipart/form-data">
+        <div class="form-grid">
+            <label>Product name
+                <input type="text" name="name" value="{{ product.name }}" required>
+            </label>
+            <label>Category
+                <select name="category_id" required>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if product.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Price
+                <input type="number" name="price" value="{{ product.price }}" step="0.01" min="0" required>
+            </label>
+            <label>Discount price
+                <input type="number" name="discount_price" value="{{ product.discount_price }}" step="0.01" min="0">
+            </label>
+            <label>Stock
+                <input type="number" name="stock" value="{{ product.stock }}" min="0" required>
+            </label>
+            <label>Unit
+                <input type="text" name="unit" value="{{ product.unit }}" required>
+            </label>
+            <label class="span-2">Image URL
+                <input type="url" name="image_url" value="{{ product.image_url }}">
+            </label>
+            <label class="span-2">Upload replacement image
+                <input type="file" name="image_file" accept="image/png,image/jpeg,image/webp,image/gif">
+            </label>
+            <label class="span-2">Description
+                <textarea name="description" rows="5" required>{{ product.description }}</textarea>
+            </label>
+            <label class="checkbox-line">
+                <input type="checkbox" name="is_best_seller" {% if product.is_best_seller %}checked{% endif %}>
+                <span>Mark as best seller</span>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save product</button>
+            <a class="btn btn-soft" href="{{ url_for('admin_dashboard') }}"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

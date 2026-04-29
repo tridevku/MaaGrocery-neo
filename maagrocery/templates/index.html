@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}MaaGrocery - Fresh Grocery Delivery{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <span class="eyebrow"><i class="fa-solid fa-sun"></i> Fresh stock updated today</span>
+        <h1>MaaGrocery</h1>
+        <p>Daily fruits, vegetables, dairy, staples, and snacks delivered from a clean local grocery store experience.</p>
+        <form class="hero-search" action="{{ url_for('products') }}" method="get">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" name="q" placeholder="Search rice, tomato, milk..." aria-label="Search groceries">
+            <button type="submit">Search</button>
+        </form>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="{{ url_for('products') }}"><i class="fa-solid fa-bag-shopping"></i> Shop now</a>
+            <a class="btn btn-soft" href="#best-sellers"><i class="fa-solid fa-star"></i> Best sellers</a>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <span class="panel-label">Market basket</span>
+        {% for product in featured_products[:3] %}
+            <div class="mini-product">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <div>
+                    <strong>{{ product.name }}</strong>
+                    {% if product.discount_price and product.discount_price < product.price %}
+                        <span>{{ product.discount_price | money }}</span>
+                    {% else %}
+                        <span>{{ product.price | money }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-heading">
+        <span class="eyebrow">Featured categories</span>
+        <h2>Shop by fresh departments</h2>
+    </div>
+    <div class="category-grid">
+        {% for category in categories %}
+            <a class="category-card" href="{{ url_for('products', category=category.slug) }}">
+                <img src="{{ category.image_url }}" alt="{{ category.name }}">
+                <span>{{ category.name }}</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="offer-banner">
+    <div>
+        <span class="eyebrow">Fresh week offer</span>
+        <h2>Save on everyday essentials</h2>
+        <p>Handpicked fruits, greens, rice, dal, and dairy at smart grocery prices.</p>
+    </div>
+    <a class="btn btn-light" href="{{ url_for('products') }}"><i class="fa-solid fa-tags"></i> View offers</a>
+</section>
+
+<section class="section" id="best-sellers">
+    <div class="section-heading">
+        <span class="eyebrow">Best selling products</span>
+        <h2>Customer favorites</h2>
+    </div>
+    <div class="product-grid">
+        {% for product in best_sellers %}
+            <article class="product-card">
+                <a href="{{ url_for('product_detail', slug=product.slug) }}" class="product-image">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                </a>
+                <div class="product-body">
+                    <span class="product-category">{{ product.category_name }}</span>
+                    <a class="product-name" href="{{ url_for('product_detail', slug=product.slug) }}">{{ product.name }}</a>
+                    <span class="unit">{{ product.unit }}</span>
+                    <div class="price-row">
+                        {% if product.discount_price and product.discount_price < product.price %}
+                            <strong>{{ product.discount_price | money }}</strong>
+                            <del>{{ product.price | money }}</del>
+                        {% else %}
+                            <strong>{{ product.price | money }}</strong>
+                        {% endif %}
+                    </div>
+                    <div class="add-row">
+                        <input type="number" value="1" min="1" max="{{ product.stock }}" aria-label="Quantity">
+                        <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}">
+                            <i class="fa-solid fa-cart-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,6 @@
+Flask>=3.0,<4
+python-dotenv>=1.0,<2
+oracledb>=2.4,<4
+requests>=2.32,<3
+paytmchecksum==1.7.0
+pycryptodome>=3.20,<4

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} - MaaGrocery{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="detail-image">
+        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+    </div>
+    <div class="detail-info">
+        <span class="eyebrow">{{ product.category_name }}</span>
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
+        <div class="price-row detail-price">
+            {% if product.discount_price and product.discount_price < product.price %}
+                <strong>{{ product.discount_price | money }}</strong>
+                <del>{{ product.price | money }}</del>
+            {% else %}
+                <strong>{{ product.price | money }}</strong>
+            {% endif %}
+        </div>
+        <span class="stock {% if product.stock <= 0 %}out{% endif %}">
+            {% if product.stock > 0 %}In stock: {{ product.stock }} {{ product.unit }}{% else %}Out of stock{% endif %}
+        </span>
+        <div class="add-row detail-add">
+            <input type="number" value="1" min="1" max="{{ product.stock if product.stock > 0 else 1 }}" aria-label="Quantity">
+            <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}" {% if product.stock <= 0 %}disabled{% endif %}>
+                <i class="fa-solid fa-cart-plus"></i> Add to cart
+            </button>
+        </div>
+    </div>
+</section>
+
+{% if related %}
+<section class="section">
+    <div class="section-heading">
+        <span class="eyebrow">More from {{ product.category_name }}</span>
+        <h2>Related groceries</h2>
+    </div>
+    <div class="product-grid">
+        {% for item in related %}
+            <article class="product-card">
+                <a href="{{ url_for('product_detail', slug=item.slug) }}" class="product-image">
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}">
+                </a>
+                <div class="product-body">
+                    <a class="product-name" href="{{ url_for('product_detail', slug=item.slug) }}">{{ item.name }}</a>
+                    <span class="unit">{{ item.unit }}</span>
+                    <div class="price-row">
+                        {% if item.discount_price and item.discount_price < item.price %}
+                            <strong>{{ item.discount_price | money }}</strong>
+                            <del>{{ item.price | money }}</del>
+                        {% else %}
+                            <strong>{{ item.price | money }}</strong>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

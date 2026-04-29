@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}MaaGrocery{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <div class="top-strip">
+            <span><i class="fa-solid fa-truck-fast"></i> Same day delivery above Rs. 499</span>
+            <span><i class="fa-solid fa-leaf"></i> Farm fresh groceries every morning</span>
+        </div>
+        <nav class="navbar">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark"><i class="fa-solid fa-basket-shopping"></i></span>
+                <span>MaaGrocery</span>
+            </a>
+            <button class="nav-toggle" type="button" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('products') }}">Products</a>
+                {% for category in categories_nav[:3] %}
+                    <a href="{{ url_for('products', category=category.slug) }}">{{ category.name }}</a>
+                {% endfor %}
+                <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+            </div>
+            <a class="cart-link" href="{{ url_for('cart') }}" aria-label="Cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count">{{ cart_count }}</span>
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="flash-wrap">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div>
+            <a class="brand footer-brand" href="{{ url_for('index') }}">
+                <span class="brand-mark"><i class="fa-solid fa-basket-shopping"></i></span>
+                <span>MaaGrocery</span>
+            </a>
+            <p>Fresh groceries, clean checkout, and simple admin control.</p>
+        </div>
+        <div class="footer-links">
+            <a href="{{ url_for('products') }}">Shop</a>
+            <a href="{{ url_for('cart') }}">Cart</a>
+            <a href="{{ url_for('admin_login') }}">Admin Login</a>
+        </div>
+        <span class="copyright">&copy; {{ current_year }} MaaGrocery</span>
+    </footer>
+
+    <div class="toast" aria-live="polite"></div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
